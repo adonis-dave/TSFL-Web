@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  password String
+  name     String
+}
+
+model Program {
+  id             Int      @id @default(autoincrement())
+  titleEn        String
+  titleSw        String
+  descriptionEn  String
+  descriptionSw  String
+  slug           String   @unique
+  icon           String?
+  order          Int      @default(0)
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Event {
+  id            Int      @id @default(autoincrement())
+  titleEn       String
+  titleSw       String
+  descriptionEn String?
+  descriptionSw String?
+  date          DateTime
+  location      String
+  imageUrl      String?
+  type          String   @default("upcoming")
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Testimonial {
+  id           Int      @id @default(autoincrement())
+  name         String
+  photoUrl     String?
+  quoteEn      String
+  quoteSw      String
+  role         String?
+  organization String?
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model TeamMember {
+  id        Int      @id @default(autoincrement())
+  name      String
+  photoUrl  String?
+  roleEn    String
+  roleSw    String
+  bioEn     String?
+  bioSw     String?
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Contact {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  subject   String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Newsletter {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}

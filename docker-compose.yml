@@ -1,0 +1,55 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: sfl-db
+    restart: unless-stopped
+    ports:
+      - '5433:5432'
+    environment:
+      POSTGRES_USER: ${DB_USER:-sfl}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-sfl_password}
+      POSTGRES_DB: ${DB_NAME:-sfl_tanzania}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    container_name: sfl-backend
+    restart: unless-stopped
+    ports:
+      - '4001:4000'
+    env_file:
+      - .env
+    environment:
+      PORT: 4000
+      DATABASE_URL: postgres://${DB_USER:-sfl}:${DB_PASSWORD:-sfl_password}@db:5432/${DB_NAME:-sfl_tanzania}
+      CORS_ORIGIN: '*'
+      JWT_SECRET: ${JWT_SECRET:-change-me-jwt-secret}
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend
+    container_name: sfl-frontend
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
+    depends_on:
+      - backend
+
+  nginx:
+    image: nginx:alpine
+    container_name: sfl-nginx
+    restart: unless-stopped
+    ports:
+      - '8081:80'
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - backend
+      - frontend
+
+volumes:
+  pgdata:
